@@ -22,6 +22,15 @@
 import { ref } from 'vue'
 import useSlider from './use-slider'
 export default {
+  name: 'slider',
+    props: {
+      sliders: {
+        type: Array,
+        default() {
+          return []
+        }
+      }
+    },
   setup() {
     const rootRef = ref(null)
     const { currentPageIndex } = useSlider(rootRef)

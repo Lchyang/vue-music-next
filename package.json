@@ -33,6 +33,6 @@
     "eslint-plugin-vue": "^7.0.0",
     "node-sass": "^5.0.0",
     "sass-loader": "^10.1.0",
-    "vue-loader-v16": "^16.0.0-beta.5.4"
+    "pinyin": "^2.9.1"
   }
 }
