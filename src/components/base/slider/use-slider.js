@@ -6,10 +6,10 @@ BScroll.use(Slide)
 
 export default function userSlider(refWrapper) {
   const currentPageIndex = ref(0)
-  let slider
+  const slider = ref(null)
 
   const initSlider = () => {
-      slider = new BScroll(refWrapper.value, {
+      slider.value = new BScroll(refWrapper.value, {
         scrollX: true,
         scrollY: false,
         slide: {
@@ -20,7 +20,7 @@ export default function userSlider(refWrapper) {
         stopPropagation: true
       })
 
-      slider.on('slideWillChange', (page) => {
+      slider.value.on('slideWillChange', (page) => {
         currentPageIndex.value = page.pageX
       })
   }
@@ -28,19 +28,20 @@ export default function userSlider(refWrapper) {
     initSlider()
   })
   onUnmounted(() => {
-    slider.destroy()
+    slider.value.destroy()
   })
 
   onActivated(() => {
-    slider.enable()
-    slider.refresh()
+    slider.value.enable()
+    slider.value.refresh()
   })
 
   onDeactivated(() => {
-    slider.disable()
+    slider.value.disable()
   })
 
   return {
+    slider,
     currentPageIndex
   }
 }
