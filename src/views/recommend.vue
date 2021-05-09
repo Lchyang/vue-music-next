@@ -1,6 +1,7 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
+    <scroll class="recommend-content">
+      <div>
         <div class="slider-wrapper">
           <div class="slider-content">
             <slider v-if="sliders.length" :sliders="sliders"></slider>
@@ -29,7 +30,8 @@
             </li>
           </ul>
         </div>
-    </div>
+      </div>
+    </scroll>
     <!-- <router-view v-slot="{ Component }">
       <transition appear name="slide">
         <component :is="Component" :data="selectedAlbum"/>
@@ -40,9 +42,10 @@
 
 <script>
 import { getRecommend } from '@/service/recommend'
-import Slider from '@/components/base/slider'
+import Slider from '@/components/base/slider/slider'
+import Scroll from '@/components/base/scroll/scroll'
 export default {
-  components: { Slider },
+  components: { Slider, Scroll },
   data() {
     return {
       sliders: [],
