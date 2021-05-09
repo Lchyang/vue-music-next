@@ -52,7 +52,7 @@
 
 <script>
   import Scroll from '@/components/base/scroll/scroll'
-  // import useFixed from './use-fixed'
+  import useFixed from './use-fixed'
   // import useShortcut from './use-shortcut'
 
   export default {
@@ -64,6 +64,12 @@
         default() {
           return []
         }
+      }
+    },
+    setup() {
+      const { groupRef } = useFixed()
+      return {
+        groupRef
       }
     }
     // emits: ['select'],
