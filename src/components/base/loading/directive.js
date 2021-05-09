@@ -9,11 +9,19 @@ const loadingDirective = {
         const app = createApp(Loading)
         const instance = app.mount(document.createElement('div'))
         el.instance = instance
+        const arg = binding.arg
+        if (arg !== undefined) {
+            instance.setTitle(arg)
+        }
         if (binding.value) {
             append(el)
         }
     },
     updated(el, binding) {
+        const arg = binding.arg
+        if (arg !== undefined) {
+            el.instance.setTitle(arg)
+        }
         if (binding.value !== binding.oldValue) {
             binding.value ? append(el) : remove(el)
         }
@@ -21,7 +29,6 @@ const loadingDirective = {
 }
 function append(el) {
     const style = getComputedStyle(el)
-    debugger
     if (!['fixed', 'absolute', 'relitive'].includes(style.position)) {
         addClass(el, className)
     }
