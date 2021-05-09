@@ -19,21 +19,18 @@
   </div>
 </template>
 <script>
+import userSlider from './use-slider'
 import { ref } from 'vue'
-import useSlider from './use-slider'
+
 export default {
-  name: 'slider',
-    props: {
-      sliders: {
-        type: Array,
-        default() {
-          return []
-        }
-      }
-    },
+  props: {
+    sliders: {
+      type: Array
+    }
+  },
   setup() {
     const rootRef = ref(null)
-    const { currentPageIndex } = useSlider(rootRef)
+    const { currentPageIndex } = userSlider(rootRef)
     return {
       rootRef,
       currentPageIndex
