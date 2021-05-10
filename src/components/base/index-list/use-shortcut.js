@@ -1,10 +1,6 @@
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 export default function useShorcut(props, groupRef) {
   const ITEMHEIGHT = 18
-  const currentIndex = ref(0)
-  const startY = ref(0)
-  const endY = ref(0)
-  const diff = ref(0)
   const scrollRef = ref(null)
 
   const shortcutList = computed(() => {
@@ -13,40 +9,28 @@ export default function useShorcut(props, groupRef) {
     })
   })
 
+  const touch = {}
+
  function onShortcutTouchStart (event) {
-   const touch = event.touches[0]
-   const text = touch.target.innerText
-   startY.value = touch.clientY
-   if (text.length === 1) {
-     currentIndex.value = shortcutList.value.findIndex((item) => {
-       return item === text
-     })
-   }
-   scrollTo()
+   const anchorIndex = parseInt(event.target.dataset.index)
+   touch.startY = event.touches[0].pageY
+   touch.anchorIndex = anchorIndex
+   scrollTo(anchorIndex)
  }
 
  function onShortcutTouchMove (event) {
-   const touch = event.touches[0]
-   endY.value = touch.clientY
-   diff.value = Math.floor((endY.value - startY.value) / ITEMHEIGHT)
+   touch.endY = event.touches[0].pageY
+   const delta = (touch.endY - touch.startY) / ITEMHEIGHT | 0
+   const anchorIndex = touch.anchorIndex + delta
+   scrollTo(anchorIndex)
  }
 
- watch(diff, (newValue, oldValue) => {
-   if (newValue > oldValue) {
-      currentIndex.value += 1
-   } else {
-      currentIndex.value -= 1
-   }
-   if (currentIndex.value < 0 || currentIndex.value > shortcutList.value.length - 1) {
-     return
-   }
-   scrollTo()
- })
-
- function scrollTo () {
-   const element = groupRef.value.children[currentIndex.value]
+ function scrollTo (index) {
+   index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
+   console.log(index)
+   const element = groupRef.value.children[index]
    const scroll = scrollRef.value.scroll
-   scroll && scroll.scrollToElement(element, 100)
+   scroll && scroll.scrollToElement(element, 0)
  }
 
   return {
