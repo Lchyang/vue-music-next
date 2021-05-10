@@ -1,6 +1,8 @@
 <template>
   <scroll
     class="index-list"
+    :probeType="3"
+    @scroll="onScroll"
     ref="scrollRef"
   >
     <ul ref="groupRef">
@@ -23,14 +25,13 @@
         </ul>
       </li>
     </ul>
-    <!-- <div
+    <div
       class="fixed"
       v-show="fixedTitle"
-      :style="fixedStyle"
     >
       <div class="fixed-title">{{fixedTitle}}</div>
     </div>
-    <div
+    <!-- <div
       class="shortcut"
       @touchstart.stop.prevent="onShortcutTouchStart"
       @touchmove.stop.prevent="onShortcutTouchMove"
@@ -66,10 +67,12 @@
         }
       }
     },
-    setup() {
-      const { groupRef } = useFixed()
+    setup(props) {
+      const { groupRef, onScroll, fixedTitle } = useFixed(props)
       return {
-        groupRef
+        groupRef,
+        onScroll,
+        fixedTitle
       }
     }
     // emits: ['select'],
