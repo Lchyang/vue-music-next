@@ -15,6 +15,7 @@ export default function useShorcut(props, groupRef) {
    const anchorIndex = parseInt(event.target.dataset.index)
    touch.startY = event.touches[0].pageY
    touch.anchorIndex = anchorIndex
+   console.log(touch.startY, anchorIndex)
    scrollTo(anchorIndex)
  }
 
@@ -27,7 +28,6 @@ export default function useShorcut(props, groupRef) {
 
  function scrollTo (index) {
    index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
-   console.log(index)
    const element = groupRef.value.children[index]
    const scroll = scrollRef.value.scroll
    scroll && scroll.scrollToElement(element, 0)
