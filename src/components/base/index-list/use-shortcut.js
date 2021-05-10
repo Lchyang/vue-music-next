@@ -15,7 +15,6 @@ export default function useShorcut(props, groupRef) {
    const anchorIndex = parseInt(event.target.dataset.index)
    touch.startY = event.touches[0].pageY
    touch.anchorIndex = anchorIndex
-   console.log(touch.startY, anchorIndex)
    scrollTo(anchorIndex)
  }
 
