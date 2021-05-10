@@ -1,46 +1,57 @@
-import { ref, computed } from 'vue'
-
-export default function useShortcut(props, groupRef) {
-  const ANCHOR_HEIGHT = 18
+import { computed, ref, watch } from 'vue'
+export default function useShorcut(props, groupRef) {
+  const ITEMHEIGHT = 18
+  const currentIndex = ref(0)
+  const startY = ref(0)
+  const endY = ref(0)
+  const diff = ref(0)
   const scrollRef = ref(null)
 
   const shortcutList = computed(() => {
-    return props.data.map((group) => {
-      return group.title
+    return props.data.map((item) => {
+      return item.title
     })
   })
 
-  const touch = {}
+ function onShortcutTouchStart (event) {
+   const touch = event.touches[0]
+   const text = touch.target.innerText
+   startY.value = touch.clientY
+   if (text.length === 1) {
+     currentIndex.value = shortcutList.value.findIndex((item) => {
+       return item === text
+     })
+   }
+   scrollTo()
+ }
 
-  function onShortcutTouchStart(e) {
-    const anchorIndex = parseInt(e.target.dataset.index)
-    touch.y1 = e.touches[0].pageY
-    touch.anchorIndex = anchorIndex
+ function onShortcutTouchMove (event) {
+   const touch = event.touches[0]
+   endY.value = touch.clientY
+   diff.value = Math.floor((endY.value - startY.value) / ITEMHEIGHT)
+ }
 
-    scrollTo(anchorIndex)
-  }
+ watch(diff, (newValue, oldValue) => {
+   if (newValue > oldValue) {
+      currentIndex.value += 1
+   } else {
+      currentIndex.value -= 1
+   }
+   if (currentIndex.value < 0 || currentIndex.value > shortcutList.value.length - 1) {
+     return
+   }
+   scrollTo()
+ })
 
-  function onShortcutTouchMove(e) {
-    touch.y2 = e.touches[0].pageY
-    const delta = (touch.y2 - touch.y1) / ANCHOR_HEIGHT | 0
-    const anchorIndex = touch.anchorIndex + delta
-
-    scrollTo(anchorIndex)
-  }
-
-  function scrollTo(index) {
-    if (isNaN(index)) {
-      return
-    }
-    index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
-    const targetEl = groupRef.value.children[index]
-    const scroll = scrollRef.value.scroll
-    scroll.scrollToElement(targetEl, 0)
-  }
+ function scrollTo () {
+   const element = groupRef.value.children[currentIndex.value]
+   const scroll = scrollRef.value.scroll
+   scroll && scroll.scrollToElement(element, 100)
+ }
 
   return {
-    shortcutList,
     scrollRef,
+    shortcutList,
     onShortcutTouchStart,
     onShortcutTouchMove
   }

@@ -7,7 +7,7 @@ export default function useFixed(props) {
   const fixedTitle = ref('')
   const scrollY = ref(0)
   const heightList = []
-  const fixedIndex = ref(0)
+  const currentIndex = ref(0)
   const TITLEHEIGHT = 30
 
   watch(() => props.data, async () => {
@@ -20,7 +20,7 @@ export default function useFixed(props) {
   }
 
   const fixedStyle = computed(() => {
-    let distanceVal = heightList[fixedIndex.value] - scrollY.value
+    let distanceVal = heightList[currentIndex.value] - scrollY.value
     let diff = distanceVal < TITLEHEIGHT ? distanceVal - TITLEHEIGHT : 0
     return {
       transform: `translate(0, ${diff}px)`
@@ -30,7 +30,7 @@ export default function useFixed(props) {
   watch(scrollY, throttle((value) => {
     for (let i = 0; i < heightList.length; i++) {
       if (value < heightList[i]) {
-        fixedIndex.value = i
+        currentIndex.value = i
         fixedTitle.value = props.data[i].title
         break
       }
@@ -52,6 +52,7 @@ export default function useFixed(props) {
     groupRef,
     onScroll,
     fixedTitle,
-    fixedStyle
+    fixedStyle,
+    currentIndex
   }
 }

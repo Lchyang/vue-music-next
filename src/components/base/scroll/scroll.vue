@@ -22,8 +22,9 @@ export default {
     emits: ['scroll'],
     setup(props, context) {
         const scrollRef = ref(null)
-        userScroll(scrollRef, props, context)
+        const { scroll } = userScroll(scrollRef, props, context)
         return {
+            scroll,
             scrollRef
         }
     }
