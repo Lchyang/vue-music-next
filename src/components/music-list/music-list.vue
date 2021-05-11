@@ -14,7 +14,6 @@
     >
       <div
         class="play-btn-wrapper"
-        :style="playBtnStyle"
       >
         <div
           v-show="songs.length > 0"
@@ -27,14 +26,12 @@
       </div>
       <div
         class="filter"
-        :style="filterStyle"
       ></div>
     </div>
     <scroll
       class="list"
-      :style="scrollStyle"
       v-loading="loading"
-      v-no-result:[noResultText]="noResult"
+      :style="scrollStyle"
       :probe-type="3"
       @scroll="onScroll"
     >
@@ -56,6 +53,53 @@ export default {
   components: {
     SongList,
     Scroll
+  },
+  data() {
+    return {
+      imageHeight: 0
+    }
+  },
+  props: {
+    rank: {
+      type: Boolean,
+      default: false
+    },
+    songs: {
+      type: Object
+    },
+    title: String,
+    pic: String,
+    loading: Boolean
+  },
+  computed: {
+    bgImageStyle() {
+      const paddingTop = '70%'
+      const zIndex = 10
+      return {
+        zIndex,
+        paddingTop,
+        backgroundImage: `url(${this.pic})`
+      }
+    },
+    scrollStyle() {
+      const top = this.imageHeight + 'px'
+      return {
+        top
+      }
+    }
+  },
+  methods: {
+    goBack() {
+      this.$router.back()
+    },
+    selectItem() {
+    },
+    onScroll() {}
+  },
+  created() {
+  },
+  mounted() {
+    this.imageHeight = this.$refs.bgImage.clientHeight
   }
 }
 </script>
