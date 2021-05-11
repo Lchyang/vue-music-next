@@ -106,7 +106,6 @@ export default {
       this.scrollY = -posY
     }
   },
-  created() {},
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight
     this.maxScroll = this.imageHeight - HEADERHEIGHT

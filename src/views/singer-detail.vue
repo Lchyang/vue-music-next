@@ -22,21 +22,25 @@ export default {
   },
   props: {
     data: {
-      type: Object,
-      default: () => {
-        return {}
-      }
+      type: Object
     }
   },
   computed: {
     title() {
-      return this.data.name
+      return this.data && this.data.name
     },
     pic() {
-      return this.data.pic
+      return this.data && this.data.pic
     }
   },
+  update() {
+  },
   async created() {
+    if (!this.data) {
+        const path = this.$route.matched[0].path
+        this.$router.push({ path })
+        return
+    }
     const result = await getSingerDetail(this.data)
     this.songs = await processSongs(result.songs)
     this.loading = false
