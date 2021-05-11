@@ -14,6 +14,7 @@
     >
       <div
         class="play-btn-wrapper"
+        :style="playBtnStyle"
       >
         <div
           v-show="songs.length > 0"
@@ -49,6 +50,7 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import Scroll from '@/components/base/scroll/scroll'
+const HEADERHEIGHT = 40
 export default {
   components: {
     SongList,
@@ -56,7 +58,9 @@ export default {
   },
   data() {
     return {
-      imageHeight: 0
+      imageHeight: 0,
+      scrollY: 0,
+      maxScroll: 0
     }
   },
   props: {
@@ -73,12 +77,37 @@ export default {
   },
   computed: {
     bgImageStyle() {
-      const paddingTop = '70%'
-      const zIndex = 10
+      const scrollY = this.scrollY
+      let zIndex = 0
+      let paddingTop = '70%'
+      let height = 0
+      let scale = 1
+      let translateZ = 0
+
+       if (scrollY > this.maxScroll) {
+          paddingTop = 0
+          height = `${HEADERHEIGHT}px`
+          translateZ = 1
+          zIndex = 10
+        }
+      if (scrollY < 0) {
+        scale = 1 + Math.abs(scrollY / this.imageHeight)
+      }
       return {
+        transform: `scale(${scale})translateZ(${translateZ})`,
+        height,
         zIndex,
         paddingTop,
         backgroundImage: `url(${this.pic})`
+      }
+    },
+    playBtnStyle() {
+      let display = ''
+      if (this.scrollY > this.maxScroll) {
+        display = 'none'
+      }
+      return {
+        display
       }
     },
     scrollStyle() {
@@ -94,12 +123,15 @@ export default {
     },
     selectItem() {
     },
-    onScroll() {}
+    onScroll(posY) {
+      this.scrollY = -posY
+    }
   },
   created() {
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight
+    this.maxScroll = this.imageHeight - HEADERHEIGHT
   }
 }
 </script>
