@@ -1,18 +1,16 @@
 <template>
-  <div class="player" v-if="currentSong">
+  <div class="player" v-if="currentSong && fullScreen">
     <div class="normal-player">
       <div class="background">
         <img :src="currentSong.pic" />
       </div>
       <div class="top">
-        <div class="back">
+        <div class="back" @click="goBack">
           <i class="icon-back"></i>
         </div>
       </div>
     </div>
-    <video ref="videoRef">
-
-    </video>
+    <video ref="videoRef" :src="currentSong.url"></video>
   </div>
 </template>
 <script>
@@ -23,7 +21,18 @@ export default {
     const videoRef = ref(null)
     const store = useStore()
     const currentSong = computed(() => store.getters.currentSong)
+    const fullScreen = computed(() => store.fullScreen)
+    console.log(currentSong)
+    // if (currentSong.value.mid && currentSong.value.id) {
+    //     videoRef.value.play()
+    // }
+    const goBack = () => {
+        store.commit('setFullScreen', false)
+    }
+
     return {
+        fullScreen,
+      goBack,
       videoRef,
       currentSong
     }
