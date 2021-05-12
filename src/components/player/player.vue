@@ -10,7 +10,9 @@
         </div>
       </div>
     </div>
-    <video ref="videoRef"></video>
+    <video ref="videoRef">
+
+    </video>
   </div>
 </template>
 <script>
