@@ -31,6 +31,7 @@
 <script>
 import SongList from '@/components/base/song-list/song-list'
 import Scroll from '@/components/base/scroll/scroll'
+import { mapActions } from 'vuex'
 const HEADERHEIGHT = 40
 export default {
   components: {
@@ -108,12 +109,19 @@ export default {
     goBack() {
       this.$router.back()
     },
-    selectItem() {
-      console.log('播放歌曲')
-    },
     onScroll(posY) {
       this.scrollY = -posY
-    }
+    },
+    selectItem({ song, index }) {
+      this.selectPlay({ list: this.songs, index })
+    },
+    random() {
+      this.selectRandom(this.songs)
+    },
+    ...mapActions({
+      selectPlay: 'selectPlay',
+      selectRandom: 'selectRandom'
+    })
   },
   mounted() {
     this.imageHeight = this.$refs.bgImage.clientHeight
