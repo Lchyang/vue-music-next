@@ -108,7 +108,9 @@ export default {
     goBack() {
       this.$router.back()
     },
-    selectItem() {},
+    selectItem() {
+      console.log('播放歌曲')
+    },
     onScroll(posY) {
       this.scrollY = -posY
     }

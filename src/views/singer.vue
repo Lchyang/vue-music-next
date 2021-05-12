@@ -11,6 +11,8 @@
 <script>
 import { getSingerList } from '@/service/singer'
 import IndexList from '@/components/base/index-list/index-list'
+import goodStore from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 export default {
   components: { IndexList },
   data() {
@@ -21,8 +23,12 @@ export default {
   },
   methods: {
     onSelect(singer) {
+      this.catche(singer)
       this.selectedSinger = singer
       this.$router.push({ path: `/singer/${singer.mid}` })
+    },
+    catche(singer) {
+      goodStore.session.set(SINGER_KEY, singer)
     }
   },
   async created() {
