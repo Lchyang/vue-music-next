@@ -33,13 +33,12 @@ export default {
       return this.data && this.data.pic
     }
   },
-  update() {
-  },
+  update() {},
   async created() {
     if (!this.data) {
-        const path = this.$route.matched[0].path
-        this.$router.push({ path })
-        return
+      const path = this.$route.matched[0].path
+      this.$router.push({ path })
+      return
     }
     const result = await getSingerDetail(this.data)
     this.songs = await processSongs(result.songs)

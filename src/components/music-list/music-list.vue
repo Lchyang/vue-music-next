@@ -16,6 +16,7 @@
     <scroll
       class="list"
       v-loading="loading"
+      v-no-result="noResult"
       :style="scrollStyle"
       :probe-type="3"
       @scroll="onScroll"
@@ -49,7 +50,10 @@ export default {
       default: false
     },
     songs: {
-      type: Object
+      type: Array,
+      default: () => {
+        return []
+      }
     },
     title: String,
     pic: String,
@@ -95,6 +99,9 @@ export default {
       return {
         top
       }
+    },
+    noResult() {
+      return !this.loading && !this.songs.length
     }
   },
   methods: {
