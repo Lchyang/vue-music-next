@@ -29,3 +29,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 2. css 具体怎么模块化处理的， css的引入问题
 3. 自定义指令自己编写 (computed)
 4. 歌手详情刷新的时候有动画效果(源代码就这样，可以优化吗？)
+5. 服务器代理
