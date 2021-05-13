@@ -8,8 +8,45 @@
         <div class="back" @click="goBack">
           <i class="icon-back"></i>
         </div>
-        <h1 class="title">{{currentSong.name}}</h1>
-        <h2 class="subtitle">{{currentSong.singer}}</h2>
+        <h1 class="title">{{ currentSong.name }}</h1>
+        <h2 class="subtitle">{{ currentSong.singer }}</h2>
+      </div>
+      <div class="bottom">
+        <!-- <div class="dot-wrapper">
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
+        </div>
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
+          </div>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
+        </div> -->
+        <div class="operators">
+          <div class="icon i-left">
+            <i @click="changeMode" class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i @click="prev" class="icon-prev"></i>
+          </div>
+          <div class="icon i-center" @click="togglePlay">
+            <i :class="playIcon"></i>
+          </div>
+          <div class="icon i-right">
+            <i @click="next" class="icon-next"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-not-favorite"></i>
+          </div>
+        </div>
       </div>
     </div>
     <audio ref="audioRef"></audio>
@@ -27,23 +64,42 @@ export default {
     const currentSong = computed(() => store.getters.currentSong)
     const fullScreen = computed(() => state.fullScreen)
     const playList = computed(() => state.playList)
+    const playing = computed(() => state.playing)
+
+    const playIcon = computed(() => {
+      return playing.value ? 'icon-pause' : 'icon-play'
+    })
 
     watch(currentSong, (newSong) => {
+      if (!newSong.id || !newSong.url) {
+        return
+      }
       const audioElement = audioRef.value
       audioElement.src = newSong.url
       audioElement.play()
     })
 
-    function goBack () {
-        store.commit('setFullScreen', false)
+    watch(playing, (newPlaying) => {
+      const audioElement = audioRef.value
+      newPlaying ? audioElement.play() : audioElement.pause()
+    })
+
+    function goBack() {
+      store.commit('setFullScreen', false)
+    }
+
+    function togglePlay() {
+      store.commit('setPlayingState', !playing.value)
     }
 
     return {
+      playIcon,
       fullScreen,
       playList,
       goBack,
       audioRef,
-      currentSong
+      currentSong,
+      togglePlay
     }
   }
 }
