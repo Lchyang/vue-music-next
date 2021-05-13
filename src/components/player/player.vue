@@ -32,7 +32,7 @@
         </div> -->
         <div class="operators">
           <div class="icon i-left">
-            <i @click="changeMode" class="icon-sequence"></i>
+            <i @click="changeMode" :class="modeCls"></i>
           </div>
           <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev"></i>
@@ -55,11 +55,14 @@
 <script>
 import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
+import playMode from './play-mode'
 export default {
   setup() {
+    // data
     const audioRef = ref(null)
     const songReady = ref(false)
 
+    // vuex
     const store = useStore()
     const state = store.state
     const currentSong = computed(() => store.getters.currentSong)
@@ -67,11 +70,19 @@ export default {
     const playList = computed(() => state.playList)
     const playing = computed(() => state.playing)
     const currentIndex = computed(() => state.currentIndex)
+    // hooks
+    const { modeCls, changeMode } = playMode()
 
+    // computed
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
     })
 
+    const disableCls = computed(() => {
+      return songReady.value ? '' : 'disable'
+    })
+
+   // watch
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
         return
@@ -89,6 +100,7 @@ export default {
       newPlaying ? audioElement.play() : audioElement.pause()
     })
 
+    // methods
     function goBack() {
       store.commit('setFullScreen', false)
     }
@@ -133,10 +145,6 @@ export default {
       store.commit('setPlayingState', true)
     }
 
-    const disableCls = computed(() => {
-      return songReady.value ? '' : 'disable'
-    })
-
     function ready() {
       songReady.value = true
     }
@@ -158,7 +166,9 @@ export default {
       next,
       ready,
       error,
-      disableCls
+      disableCls,
+      modeCls,
+      changeMode
     }
   }
 }
