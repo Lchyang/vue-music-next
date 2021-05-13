@@ -13,23 +13,25 @@ export default function useFavorite() {
         const compare = (item) => {
             return item.id === song.id
         }
-        const index = favoriteList.value.findIndex((item) => {
-            return item.id === song.id
-        })
-        if (index > -1) {
-            const list = remove(FAVORITE_KEY, song, compare)
-            store.commit('setFavoriteList', list)
+        let list
+        if (isFavorite(song)) {
+            list = remove(FAVORITE_KEY, compare)
         } else {
-            const list = save(FAVORITE_KEY, song)
-            store.commit('setFavoriteList', list)
+            list = save(FAVORITE_KEY, song, compare)
         }
+        store.commit('setFavoriteList', list)
     }
+
     function favoriteCls(song) {
-        const index = favoriteList.value.findIndex((item) => {
-            return item.id === song.id
-        })
-        return index > -1 ? 'icon-favorite' : 'icon-not-favorite'
+        return isFavorite(song) ? 'icon-favorite' : 'icon-not-favorite'
     }
+
+    function isFavorite(song) {
+        return favoriteList.value.findIndex((item) => {
+            return item.id === song.id
+        }) > -1
+    }
+
     return {
         toggleFavorite,
         favoriteCls
