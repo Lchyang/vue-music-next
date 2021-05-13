@@ -16,6 +16,9 @@ const mutations = {
     },
     setPlayMode(state, playMode) {
         state.playMode = playMode
+    },
+    setFavoriteList(state, list) {
+        state.favoriteList = list
     }
 }
 export default mutations
