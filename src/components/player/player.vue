@@ -37,8 +37,8 @@
           <div class="icon i-left">
             <i @click="prev" class="icon-prev"></i>
           </div>
-          <div class="icon i-center" @click="togglePlay">
-            <i :class="playIcon"></i>
+          <div class="icon i-center">
+            <i :class="playIcon" @click="togglePlay"></i>
           </div>
           <div class="icon i-right">
             <i @click="next" class="icon-next"></i>
@@ -65,6 +65,7 @@ export default {
     const fullScreen = computed(() => state.fullScreen)
     const playList = computed(() => state.playList)
     const playing = computed(() => state.playing)
+    const currentIndex = computed(() => state.currentIndex)
 
     const playIcon = computed(() => {
       return playing.value ? 'icon-pause' : 'icon-play'
@@ -77,6 +78,7 @@ export default {
       const audioElement = audioRef.value
       audioElement.src = newSong.url
       audioElement.play()
+      store.commit('setPlayingState', true)
     })
 
     watch(playing, (newPlaying) => {
@@ -92,14 +94,48 @@ export default {
       store.commit('setPlayingState', !playing.value)
     }
 
+    function prev() {
+      if (playList.value.length === 1) {
+        reset()
+      } else {
+        let index = currentIndex.value - 1
+        if (index === -1) {
+          index = playList.value.length - 1
+        }
+        store.commit('setCurrentIndex', index)
+      }
+    }
+
+    function next() {
+      if (playList.value.length === 1) {
+        reset()
+      } else {
+        let index = currentIndex.value + 1
+        if (index === playList.value.length) {
+          index = 0
+        }
+        store.commit('setCurrentIndex', index)
+      }
+    }
+
+    function reset() {
+      const audioElement = audioRef.value
+      audioElement.currentTime = 0
+      audioElement.play()
+      store.commit('setPlayingState', true)
+    }
+
     return {
+      currentIndex,
       playIcon,
       fullScreen,
       playList,
       goBack,
       audioRef,
       currentSong,
-      togglePlay
+      togglePlay,
+      prev,
+      next
     }
   }
 }
