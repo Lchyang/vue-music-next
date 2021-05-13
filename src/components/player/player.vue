@@ -34,13 +34,13 @@
           <div class="icon i-left">
             <i @click="changeMode" class="icon-sequence"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev"></i>
           </div>
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disableCls">
             <i :class="playIcon" @click="togglePlay"></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disableCls">
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
@@ -49,7 +49,7 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef"></audio>
+    <audio ref="audioRef" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 <script>
@@ -58,6 +58,7 @@ import { useStore } from 'vuex'
 export default {
   setup() {
     const audioRef = ref(null)
+    const songReady = ref(false)
 
     const store = useStore()
     const state = store.state
@@ -78,10 +79,12 @@ export default {
       const audioElement = audioRef.value
       audioElement.src = newSong.url
       audioElement.play()
+      songReady.value = false
       store.commit('setPlayingState', true)
     })
 
     watch(playing, (newPlaying) => {
+      if (!songReady.value) { return }
       const audioElement = audioRef.value
       newPlaying ? audioElement.play() : audioElement.pause()
     })
@@ -91,27 +94,32 @@ export default {
     }
 
     function togglePlay() {
+      if (!songReady.value) { return }
       store.commit('setPlayingState', !playing.value)
     }
 
     function prev() {
-      if (playList.value.length === 1) {
+      const list = playList.value
+      if (!list.length || !songReady.value) { return }
+      if (list.length === 1) {
         reset()
       } else {
         let index = currentIndex.value - 1
         if (index === -1) {
-          index = playList.value.length - 1
+          index = list.length - 1
         }
         store.commit('setCurrentIndex', index)
       }
     }
 
     function next() {
-      if (playList.value.length === 1) {
+      const list = playList.value
+      if (!list.length || !songReady.value) { return }
+      if (list.length === 1) {
         reset()
       } else {
         let index = currentIndex.value + 1
-        if (index === playList.value.length) {
+        if (index === list.length) {
           index = 0
         }
         store.commit('setCurrentIndex', index)
@@ -125,6 +133,18 @@ export default {
       store.commit('setPlayingState', true)
     }
 
+    const disableCls = computed(() => {
+      return songReady.value ? '' : 'disable'
+    })
+
+    function ready() {
+      songReady.value = true
+    }
+
+    function error() {
+      songReady.value = true
+    }
+
     return {
       currentIndex,
       playIcon,
@@ -135,7 +155,10 @@ export default {
       currentSong,
       togglePlay,
       prev,
-      next
+      next,
+      ready,
+      error,
+      disableCls
     }
   }
 }
