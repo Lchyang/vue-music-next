@@ -1,6 +1,6 @@
 <template>
-  <div class="player" v-if="currentSong && fullScreen">
-    <div class="normal-player">
+  <div class="player">
+    <div class="normal-player" v-show="fullScreen">
       <div class="background">
         <img :src="currentSong.pic" />
       </div>
@@ -8,32 +8,41 @@
         <div class="back" @click="goBack">
           <i class="icon-back"></i>
         </div>
+        <h1 class="title">{{currentSong.name}}</h1>
+        <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
     </div>
-    <video ref="videoRef" :src="currentSong.url"></video>
+    <audio ref="audioRef"></audio>
   </div>
 </template>
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 export default {
   setup() {
-    const videoRef = ref(null)
+    const audioRef = ref(null)
+
     const store = useStore()
+    const state = store.state
     const currentSong = computed(() => store.getters.currentSong)
-    const fullScreen = computed(() => store.fullScreen)
-    console.log(currentSong)
-    // if (currentSong.value.mid && currentSong.value.id) {
-    //     videoRef.value.play()
-    // }
-    const goBack = () => {
+    const fullScreen = computed(() => state.fullScreen)
+    const playList = computed(() => state.playList)
+
+    watch(currentSong, (newSong) => {
+      const audioElement = audioRef.value
+      audioElement.src = newSong.url
+      audioElement.play()
+    })
+
+    function goBack () {
         store.commit('setFullScreen', false)
     }
 
     return {
-        fullScreen,
+      fullScreen,
+      playList,
       goBack,
-      videoRef,
+      audioRef,
       currentSong
     }
   }
