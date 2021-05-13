@@ -1,6 +1,5 @@
 import { PLAYMODE } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/utils'
-import getters from '@/store/getters'
 const actions = {
     selectPlay({ commit }, { list, index }) {
         commit('setPlayingState', true)
@@ -20,7 +19,7 @@ const actions = {
         commit('setPlayMode', PLAYMODE.random)
     },
 
-    changeMode({ commit, state }, mode) {
+    changeMode({ commit, state, getters }, mode) {
         if (mode === PLAYMODE.random) {
             const list = shuffle(state.playList)
             const songId = getters.currentSong(state).id
