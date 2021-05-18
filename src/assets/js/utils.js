@@ -41,3 +41,10 @@ function swap(array, i, j) {
     array[i] = array[j]
     array[j] = point
 }
+
+export function formatTime(time) {
+    time = Math.floor(time)
+    const minute = (Math.floor((time / 60)) + '').padStart(2, '0')
+    const second = ((time % 60) + '').padStart(2, '0')
+    return minute + ':' + second
+}

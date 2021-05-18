@@ -15,21 +15,18 @@
         <!-- <div class="dot-wrapper">
           <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
           <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
-        </div>
+        </div> -->
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
             <progress-bar
-              ref="barRef"
-              :progress="progress"
-              @progress-changing="onProgressChanging"
-              @progress-changed="onProgressChanged"
-            ></progress-bar>
+            :progress="progress"
+            @progress-change="onProgressChange"
+            >
+            </progress-bar>
           </div>
-          <span class="time time-r">{{
-            formatTime(currentSong.duration)
-          }}</span>
-        </div> -->
+          <span class="time time-r">{{ formatTime(currentSong.duration) }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i @click="changeMode" :class="modeCls"></i>
@@ -49,7 +46,7 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @canplay="ready" @error="error"></audio>
+    <audio ref="audioRef" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
   </div>
 </template>
 <script>
@@ -57,11 +54,16 @@ import { computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import playMode from './use-mode'
 import useFavorite from './use-favorite'
+import progressBar from './progress-bar'
+import { formatTime } from '@/assets/js/utils'
 export default {
+  components: { progressBar },
   setup() {
     // data
     const audioRef = ref(null)
     const songReady = ref(false)
+    const currentTime = ref(0)
+    const progress = ref(0)
 
     // vuex
     const store = useStore()
@@ -155,6 +157,16 @@ export default {
       songReady.value = true
     }
 
+    function timeUpdate(e) {
+      const current = e.target.currentTime
+      currentTime.value = current
+      progress.value = current / currentSong.value.duration
+    }
+
+    function onProgressChange(value) {
+      progress.value = value
+    }
+
     return {
       currentIndex,
       playIcon,
@@ -172,7 +184,12 @@ export default {
       modeCls,
       changeMode,
       toggleFavorite,
-      favoriteCls
+      favoriteCls,
+      timeUpdate,
+      formatTime,
+      currentTime,
+      progress,
+      onProgressChange
     }
   }
 }
