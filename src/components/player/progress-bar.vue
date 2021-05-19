@@ -37,24 +37,37 @@ export default {
   },
   watch: {
     progress(newProgress) {
-      this.offestX = newProgress * (this.$el.clientWidth - buttonWidth)
+      const offestX = newProgress * (this.$el.clientWidth - buttonWidth)
+      this.offestX = offestX
     }
   },
   methods: {
     onClick(e) {
       const barRect = this.$el.getBoundingClientRect()
       const pagex = e.pageX
-      const playedBar = pagex - barRect.left - buttonWidth / 2
+      const playedBar = pagex - barRect.left - buttonWidth
       const progress = playedBar / (this.$el.clientWidth - buttonWidth)
-      this.$emit('progress-change', progress)
+      this.$emit('progress-changed', progress)
     },
-    onTouchStart(e) {
-      console.log(e.touches[0].pageX)
-    },
-    onTouchMove() {
 
+    onTouchStart(e) {
+      this.touch.start = e.touches[0].pageX
+      this.touch.beginWidth = this.offestX
     },
-    onTouchEnd() {}
+
+    onTouchMove(e) {
+        const barWidth = this.$el.clientWidth - buttonWidth
+        const scrollX = e.touches[0].pageX - this.touch.start
+        const point = Math.min(Math.max(this.touch.beginWidth + scrollX, 0), barWidth)
+        const progress = point / barWidth
+        this.$emit('progress-changing', progress)
+    },
+
+    onTouchEnd(e) {
+        const barWidth = this.$el.clientWidth - buttonWidth
+        const progress = this.offestX / barWidth
+        this.$emit('progress-changed', progress)
+    }
   },
   created() {
     this.touch = {}

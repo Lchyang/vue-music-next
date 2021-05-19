@@ -21,7 +21,8 @@
           <div class="progress-bar-wrapper">
             <progress-bar
             :progress="progress"
-            @progress-change="onProgressChange"
+            @progress-changing="onProgressChanging"
+            @progress-changed="onProgressChanged"
             >
             </progress-bar>
           </div>
@@ -64,6 +65,7 @@ export default {
     const songReady = ref(false)
     const currentTime = ref(0)
     const progress = ref(0)
+    const progressChanging = ref(false)
 
     // vuex
     const store = useStore()
@@ -164,18 +166,27 @@ export default {
     }
 
     function timeUpdate(e) {
-      const current = e.target.currentTime
-      currentTime.value = current
-      progress.value = current / currentSong.value.duration
+      if (!progressChanging.value) {
+        const current = e.target.currentTime
+        currentTime.value = current
+        progress.value = current / currentSong.value.duration
+      }
     }
 
-    function onProgressChange(value) {
-      progress.value = value
+    function onProgressChanged(value) {
+      progressChanging.value = false
       const audioElement = audioRef.value
+      progress.value = value
       const duration = currentSong.value.duration
       const time = value * duration
       currentTime.value = time > duration ? duration : time
       audioElement.currentTime = currentTime.value
+    }
+
+    function onProgressChanging(value) {
+      progressChanging.value = true
+      progress.value = value
+      currentTime.value = value * currentSong.value.duration
     }
 
     return {
@@ -200,7 +211,8 @@ export default {
       formatTime,
       currentTime,
       progress,
-      onProgressChange
+      onProgressChanged,
+      onProgressChanging
     }
   }
 }
