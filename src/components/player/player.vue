@@ -104,6 +104,12 @@ export default {
       newPlaying ? audioElement.play() : audioElement.pause()
     })
 
+    watch(progress, (newProgress) => {
+      if (Math.floor(newProgress) === 1) {
+        next()
+      }
+    })
+
     // methods
     function goBack() {
       store.commit('setFullScreen', false)
@@ -165,6 +171,11 @@ export default {
 
     function onProgressChange(value) {
       progress.value = value
+      const audioElement = audioRef.value
+      const duration = currentSong.value.duration
+      const time = value * duration
+      currentTime.value = time > duration ? duration : time
+      audioElement.currentTime = currentTime.value
     }
 
     return {

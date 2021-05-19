@@ -32,12 +32,12 @@ export default {
       return `transform: translate(${this.offestX}px, 0)`
     },
     progressStyle() {
-      return {}
+      return `width: ${this.offestX}px`
     }
   },
   watch: {
     progress(newProgress) {
-        this.offestX = newProgress * (this.$el.clientWidth - buttonWidth)
+      this.offestX = newProgress * (this.$el.clientWidth - buttonWidth)
     }
   },
   methods: {
@@ -48,8 +48,12 @@ export default {
       const progress = playedBar / (this.$el.clientWidth - buttonWidth)
       this.$emit('progress-change', progress)
     },
-    onTouchStart() {},
-    onTouchMove(e) {},
+    onTouchStart(e) {
+      console.log(e.touches[0].pageX)
+    },
+    onTouchMove() {
+
+    },
     onTouchEnd() {}
   },
   created() {
