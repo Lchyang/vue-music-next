@@ -20,13 +20,15 @@
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
             <progress-bar
-            :progress="progress"
-            @progress-changing="onProgressChanging"
-            @progress-changed="onProgressChanged"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
             >
             </progress-bar>
           </div>
-          <span class="time time-r">{{ formatTime(currentSong.duration) }}</span>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
         </div>
         <div class="operators">
           <div class="icon i-left">
@@ -42,12 +44,21 @@
             <i @click="next" class="icon-next"></i>
           </div>
           <div class="icon i-right">
-            <i @click=toggleFavorite(currentSong) :class="favoriteCls(currentSong)"></i>
+            <i
+              @click="toggleFavorite(currentSong)"
+              :class="favoriteCls(currentSong)"
+            ></i>
           </div>
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
+    <audio
+      ref="audioRef"
+      @canplay="ready"
+      @error="error"
+      @timeupdate="timeUpdate"
+      @ended="end"
+    ></audio>
   </div>
 </template>
 <script>
@@ -57,6 +68,7 @@ import playMode from './use-mode'
 import useFavorite from './use-favorite'
 import progressBar from './progress-bar'
 import { formatTime } from '@/assets/js/utils'
+import { PLAYMODE } from '@/assets/js/constant'
 export default {
   components: { progressBar },
   setup() {
@@ -64,8 +76,7 @@ export default {
     const audioRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
-    const progress = ref(0)
-    const progressChanging = ref(false)
+    let progressChanging = false
 
     // vuex
     const store = useStore()
@@ -75,8 +86,11 @@ export default {
     const playList = computed(() => state.playList)
     const playing = computed(() => state.playing)
     const currentIndex = computed(() => state.currentIndex)
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration
+    })
     // hooks
-    const { modeCls, changeMode } = playMode()
+    const { modeCls, changeMode, playingMode } = playMode()
     const { toggleFavorite, favoriteCls } = useFavorite()
 
     // computed
@@ -88,7 +102,7 @@ export default {
       return songReady.value ? '' : 'disable'
     })
 
-   // watch
+    // watch
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
         return
@@ -101,15 +115,11 @@ export default {
     })
 
     watch(playing, (newPlaying) => {
-      if (!songReady.value) { return }
+      if (!songReady.value) {
+        return
+      }
       const audioElement = audioRef.value
       newPlaying ? audioElement.play() : audioElement.pause()
-    })
-
-    watch(progress, (newProgress) => {
-      if (Math.floor(newProgress) === 1) {
-        next()
-      }
     })
 
     // methods
@@ -118,13 +128,17 @@ export default {
     }
 
     function togglePlay() {
-      if (!songReady.value) { return }
+      if (!songReady.value) {
+        return
+      }
       store.commit('setPlayingState', !playing.value)
     }
 
     function prev() {
       const list = playList.value
-      if (!list.length || !songReady.value) { return }
+      if (!list.length || !songReady.value) {
+        return
+      }
       if (list.length === 1) {
         reset()
       } else {
@@ -138,7 +152,9 @@ export default {
 
     function next() {
       const list = playList.value
-      if (!list.length || !songReady.value) { return }
+      if (!list.length || !songReady.value) {
+        return
+      }
       if (list.length === 1) {
         reset()
       } else {
@@ -166,27 +182,31 @@ export default {
     }
 
     function timeUpdate(e) {
-      if (!progressChanging.value) {
+      if (!progressChanging) {
         const current = e.target.currentTime
         currentTime.value = current
-        progress.value = current / currentSong.value.duration
       }
     }
 
     function onProgressChanged(value) {
-      progressChanging.value = false
-      const audioElement = audioRef.value
-      progress.value = value
-      const duration = currentSong.value.duration
-      const time = value * duration
-      currentTime.value = time > duration ? duration : time
-      audioElement.currentTime = currentTime.value
+      progressChanging = false
+      value = value > 1 ? 0.999 : value
+      audioRef.value.currentTime = currentTime.value =
+        currentSong.value.duration * value
     }
 
     function onProgressChanging(value) {
-      progressChanging.value = true
-      progress.value = value
+      progressChanging = true
       currentTime.value = value * currentSong.value.duration
+    }
+
+    function end() {
+      if (playingMode.value === PLAYMODE.loop) {
+        reset()
+      } else {
+        currentTime.value = 0
+        next()
+      }
     }
 
     return {
@@ -212,7 +232,8 @@ export default {
       currentTime,
       progress,
       onProgressChanged,
-      onProgressChanging
+      onProgressChanging,
+      end
     }
   }
 }

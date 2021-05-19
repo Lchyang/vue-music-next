@@ -22,7 +22,7 @@ const actions = {
     changeMode({ commit, state, getters }, mode) {
         if (mode === PLAYMODE.random) {
             const list = shuffle(state.playList)
-            const songId = getters.currentSong(state).id
+            const songId = getters.currentSong.id
             const index = list.findIndex((item) => {
                 return item.id === songId
             })
