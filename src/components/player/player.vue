@@ -19,8 +19,9 @@
             <div ref="cdRef" class="cd">
               <img
                 ref="cdImageRef"
-                class="image playing"
+                class="image"
                 :src="currentSong.pic"
+                :class="cdCls"
               />
             </div>
           </div>
@@ -102,6 +103,7 @@ import { useStore } from 'vuex'
 import playMode from './use-mode'
 import useFavorite from './use-favorite'
 import progressBar from './progress-bar'
+import useCd from './use-cd'
 import { formatTime } from '@/assets/js/utils'
 import { PLAYMODE } from '@/assets/js/constant'
 export default {
@@ -127,6 +129,7 @@ export default {
     // hooks
     const { modeCls, changeMode, playingMode } = playMode()
     const { toggleFavorite, favoriteCls } = useFavorite()
+    const { cdCls, cdRef, cdImageRef } = useCd()
 
     // computed
     const playIcon = computed(() => {
@@ -268,7 +271,10 @@ export default {
       progress,
       onProgressChanged,
       onProgressChanging,
-      end
+      end,
+      cdCls,
+      cdRef,
+      cdImageRef
     }
   }
 }
