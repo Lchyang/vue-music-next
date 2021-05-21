@@ -7,6 +7,9 @@ export default function useLyric({ currentTime }) {
     const store = useStore()
     const currentLyric = ref(null)
     const playingLyric = ref('')
+    const lyricNumber = ref(0)
+    const lyricScrollRef = ref(null)
+    const lyricListRef = ref(null)
 
     const currentSong = computed(() => {
         return store.getters.currentSong
@@ -38,10 +41,26 @@ export default function useLyric({ currentTime }) {
 
     function handler({ lineNum, txt }) {
         playingLyric.value = txt
+        lyricNumber.value = lineNum
+        const scrollEle = lyricScrollRef.value
+        const lyricListEle = lyricListRef.value
+        if (!lyricListEle) {
+            return
+        }
+        if (lineNum > 5) {
+            const lineEl = lyricListEle.children[lineNum - 5]
+            scrollEle.scroll.scrollToElement(lineEl, 1000)
+        } else {
+            scrollEle.scroll.scrollTo(0, 0, 1000)
+        }
     }
 
     return {
         playLyric,
-        playingLyric
+        playingLyric,
+        currentLyric,
+        lyricNumber,
+        lyricListRef,
+        lyricScrollRef
     }
 }
