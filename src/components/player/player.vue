@@ -25,33 +25,28 @@
               />
             </div>
           </div>
-          <!-- <div class="playing-lyric-wrapper">
+          <div class="playing-lyric-wrapper">
             <div class="playing-lyric">{{ playingLyric }}</div>
-          </div> -->
+          </div>
         </div>
-        <!-- <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
+        <scroll class="middle-r" ref="lyricScrollRef">
           <div class="lyric-wrapper">
-            <div v-if="currentLyric" ref="lyricListRef">
+            <div  ref="lyricListRef">
               <p
                 class="text"
-                :class="{ current: currentLineNum === index }"
-                v-for="(line, index) in currentLyric.lines"
-                :key="line.num"
               >
-                {{ line.txt }}
               </p>
             </div>
-            <div class="pure-music" v-show="pureMusicLyric">
-              <p>{{ pureMusicLyric }}</p>
+            <div class="pure-music">
             </div>
           </div>
-        </scroll> -->
+        </scroll>
       </div>
       <div class="bottom">
-        <!-- <div class="dot-wrapper">
+        <div class="dot-wrapper">
           <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
           <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
-        </div> -->
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
@@ -104,15 +99,18 @@ import playMode from './use-mode'
 import useFavorite from './use-favorite'
 import progressBar from './progress-bar'
 import useCd from './use-cd'
+import useLyric from './use-lyric'
 import { formatTime } from '@/assets/js/utils'
 import { PLAYMODE } from '@/assets/js/constant'
+import Scroll from '@/components/base/scroll/scroll'
 export default {
-  components: { progressBar },
+  components: { progressBar, Scroll },
   setup() {
     // data
     const audioRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
+    const currentShow = ref('cd')
     let progressChanging = false
 
     // vuex
@@ -130,6 +128,7 @@ export default {
     const { modeCls, changeMode, playingMode } = playMode()
     const { toggleFavorite, favoriteCls } = useFavorite()
     const { cdCls, cdRef, cdImageRef } = useCd()
+    const { playLyric, playingLyric } = useLyric({ currentTime })
 
     // computed
     const playIcon = computed(() => {
@@ -231,6 +230,10 @@ export default {
       value = value > 1 ? 0.999 : value
       audioRef.value.currentTime = currentTime.value =
         currentSong.value.duration * value
+      if (!playing.value) {
+        store.commit('setPlayingState', true)
+      }
+      playLyric()
     }
 
     function onProgressChanging(value) {
@@ -274,7 +277,9 @@ export default {
       end,
       cdCls,
       cdRef,
-      cdImageRef
+      cdImageRef,
+      playingLyric,
+      currentShow
     }
   }
 }
@@ -378,14 +383,14 @@ export default {
         }
         .playing-lyric-wrapper {
           width: 80%;
-          margin: 30px auto 0 auto;
+          margin: 50px auto 0 auto;
           overflow: hidden;
           text-align: center;
           .playing-lyric {
             height: 20px;
             line-height: 20px;
             font-size: $font-size-medium;
-            color: $color-text-l;
+            color: $color-text;
           }
         }
       }
