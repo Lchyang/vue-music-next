@@ -11,8 +11,13 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
-      <div class="middle">
-        <!-- <div class="middle-l">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
+        <div class="middle-l" :style="middleLStyle">
           <div ref="cdWrapperRef" class="cd-wrapper">
             <div ref="cdRef" class="cd">
               <img
@@ -26,8 +31,8 @@
           <div class="playing-lyric-wrapper">
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
-        </div> -->
-        <scroll class="middle-r" ref="lyricScrollRef">
+        </div>
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p
@@ -101,6 +106,7 @@ import useFavorite from './use-favorite'
 import progressBar from './progress-bar'
 import useCd from './use-cd'
 import useLyric from './use-lyric'
+import useMiddleTouch from './use-middle-touch'
 import { formatTime } from '@/assets/js/utils'
 import { PLAYMODE } from '@/assets/js/constant'
 import Scroll from '@/components/base/scroll/scroll'
@@ -111,7 +117,6 @@ export default {
     const audioRef = ref(null)
     const songReady = ref(false)
     const currentTime = ref(0)
-    const currentShow = ref('cd')
     let progressChanging = false
 
     // vuex
@@ -137,6 +142,14 @@ export default {
       lyricListRef,
       lyricScrollRef
     } = useLyric({ currentTime })
+    const {
+      onMiddleTouchEnd,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      currentShow,
+      middleLStyle,
+      middleRStyle
+    } = useMiddleTouch()
 
     // computed
     const playIcon = computed(() => {
@@ -291,7 +304,12 @@ export default {
       currentLyric,
       lyricNumber,
       lyricListRef,
-      lyricScrollRef
+      lyricScrollRef,
+      onMiddleTouchEnd,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      middleLStyle,
+      middleRStyle
     }
   }
 }
