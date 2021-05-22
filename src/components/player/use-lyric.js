@@ -23,6 +23,7 @@ export default function useLyric({ currentTime }) {
             lyricValue.stop()
         }
         const lyric = await getLyric(newSong)
+        console.log(lyric, '歌词')
         currentLyric.value = new Lyric(lyric, handler)
         currentLyric.value.play()
     })

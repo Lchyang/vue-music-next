@@ -32,6 +32,7 @@ export default class Lyric {
     this._initLines()
   }
 
+  // 处理和时间无关的标签
   _initTag() {
     for (const tag in tagRegMap) {
       const matches = this.lrc.match(new RegExp(`\\[${tagRegMap[tag]}:([^\\]]*)]`, 'i'))
@@ -39,6 +40,7 @@ export default class Lyric {
     }
   }
 
+  // 处理歌词转化日期格式，清空空数据, 并按时间顺序排序
   _initLines() {
     const lines = this.lrc.split('\n')
     const offset = parseInt(this.tags.offset) || 0
@@ -61,6 +63,7 @@ export default class Lyric {
     })
   }
 
+  // 寻找当前时间的歌词行号
   _findCurNum(time) {
     for (let i = 0; i < this.lines.length; i++) {
       if (time <= this.lines[i].time) {
@@ -70,6 +73,7 @@ export default class Lyric {
     return this.lines.length - 1
   }
 
+  // 调用回调函数，传出当前歌词和行号
   _callHandler(i) {
     if (i < 0) {
       return
