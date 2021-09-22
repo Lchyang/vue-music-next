@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { getRecommend } from '@/service/recommend'
+import { getRecommend, getFile } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider'
 import Scroll from '@/components/base/scroll/scroll'
 export default {
@@ -61,6 +61,8 @@ export default {
 
   },
   async created() {
+    const file = await getFile()
+    console.log(file, 'get file node')
     const result = await getRecommend()
     this.sliders = result.sliders
     this.albums = result.albums

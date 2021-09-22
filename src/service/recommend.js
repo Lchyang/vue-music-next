@@ -10,3 +10,9 @@ export function getAlbum(album) {
     id: album.id
   })
 }
+
+export function getFile() {
+  const result = get('api/getFile')
+  console.log(result, 'result')
+  return result
+}
